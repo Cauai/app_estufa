@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# dependências do sistema (psycopg2 precisa de libpq)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# instalar bibliotecas Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copiar código do app
+COPY . .
+
+# expor porta padrão do Streamlit
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app_estufas.py", "--server.address=0.0.0.0", "--server.port=8501"]
